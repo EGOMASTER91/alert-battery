@@ -1,0 +1,53 @@
+name: Build, tests and dependency audit
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build
+        run: dotnet build BatteryAlert.sln -c Release
+      - name: Tests
+        run: dotnet test BatteryAlert.sln -c Release --no-build
+      - name: Dependency vulnerabilities
+        shell: pwsh
+        run: |
+          $raw = dotnet list BatteryAlert.sln package --vulnerable --include-transitive --format json --output-version 1
+          if ($LASTEXITCODE -ne 0) { throw 'Dependency scan failed.' }
+          $report = ($raw -join "`n") | ConvertFrom-Json
+          foreach ($project in $report.projects) {
+            foreach ($framework in $project.frameworks) {
+              foreach ($package in @($framework.topLevelPackages) + @($framework.transitivePackages)) {
+                if ($package.vulnerabilities.Count -gt 0) { throw ('Vulnerable dependency: ' + $package.id) }
+              }
+            }
+          }
+
+      - name: Secret scan (Gitleaks)
+        shell: pwsh
+        run: |
+          $version = '8.30.1'
+          $asset = "gitleaks_${version}_windows_x64.zip"
+          $base = "https://github.com/gitleaks/gitleaks/releases/download/v$version"
+          $archive = Join-Path $env:RUNNER_TEMP $asset
+          Invoke-WebRequest "$base/$asset" -OutFile $archive
+          $checksums = (Invoke-WebRequest "$base/gitleaks_${version}_checksums.txt").Content
+          $line = ($checksums -split "`n" | Where-Object { $_.TrimEnd().EndsWith($asset) })
+          if (-not $line) { throw 'Missing Gitleaks checksum.' }
+          $expected = ($line.Trim() -split '\s+')[0]
+          if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne $expected) { throw 'Gitleaks checksum mismatch.' }
+          $tools = Join-Path $env:RUNNER_TEMP 'gitleaks'
+          Expand-Archive -LiteralPath $archive -DestinationPath $tools -Force
+          & (Join-Path $tools 'gitleaks.exe') git . --redact --no-banner --log-opts=--all
+          if ($LASTEXITCODE -ne 0) { throw 'Secret scan failed.' }

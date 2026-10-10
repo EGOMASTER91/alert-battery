@@ -1,0 +1,12 @@
+[extend]
+useDefault = true
+
+# Exact upstream public GPG fingerprint, not a private signing key or API token.
+# Scope requires BOTH the unmodified corresponding-source archive path and value.
+[[allowlists]]
+description = "HeadsetControl upstream public GPG signing-key fingerprint"
+condition = "AND"
+targetRules = ["generic-api-key"]
+regexTarget = "match"
+paths = ['''vendor[/\\]headsetcontrol[/\\]headsetcontrol-4\.1\.0\.tar\.gz!headsetcontrol-4\.1\.0/\.github/workflows/ppa-upload\.yml$''']
+regexes = ['''SIGN_KEY: 893E9C96C0E1A0CE52CF88FD12C8E71EC92CF077''']

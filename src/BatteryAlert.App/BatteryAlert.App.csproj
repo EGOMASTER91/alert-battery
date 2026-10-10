@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.22621.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets/app.ico</ApplicationIcon>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <AssemblyName>BatteryAlert</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="Assets/**/*" />
+    <Resource Include="Assets/**/*.png" />
+    <Resource Include="Assets/**/*.jpg" />
+    <Resource Include="Assets/**/*.ico" />
+    <ProjectReference Include="../BatteryAlert.Core/BatteryAlert.Core.csproj" />
+    <PackageReference Include="HidSharp" Version="2.6.4" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="1.8.260803002" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" Version="1.8.260921001" ExcludeAssets="all" PrivateAssets="all" GeneratePathProperty="true" />
+    <Content Include="../../vendor/headsetcontrol/**/*" Link="vendor/headsetcontrol/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../../THIRD-PARTY-NOTICES.txt" Link="THIRD-PARTY-NOTICES.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../../vendor/pulsar/**/*" Link="vendor/pulsar/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../../vendor/licenses/**/*" Link="vendor/licenses/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <!-- Foundation's notification registration needs the diagnostic resource DLL
+       shipped only in the runtime MSIX. Include that resource, without WinUI/AI. -->
+  <Target Name="IncludeWindowsAppRuntimeInsightsResource" BeforeTargets="AssignTargetPaths" DependsOnTargets="ResolvePackageAssets">
+    <PropertyGroup>
+      <WindowsAppRuntimeResourceDirectory>$(IntermediateOutputPath)WindowsAppRuntimeResources</WindowsAppRuntimeResourceDirectory>
+    </PropertyGroup>
+    <Unzip SourceFiles="$(PkgMicrosoft_WindowsAppSDK_Runtime)/tools/MSIX/win10-x64/Microsoft.WindowsAppRuntime.1.8.msix"
+           DestinationFolder="$(WindowsAppRuntimeResourceDirectory)" SkipUnchangedFiles="true" />
+    <ItemGroup>
+      <Content Include="$(WindowsAppRuntimeResourceDirectory)/Microsoft.WindowsAppRuntime.Insights.Resource.dll"
+               Link="Microsoft.WindowsAppRuntime.Insights.Resource.dll"
+               CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
+</Project>

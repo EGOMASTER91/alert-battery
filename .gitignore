@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+dist/
+.vs/
+artifacts/
+/BatteryAlert.exe
+.env
+.env.*
+*.pdb
+**/state.json
+**/state.json.*
+**/diagnostics.log*
+**/device-images/

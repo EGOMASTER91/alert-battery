@@ -1,0 +1,38 @@
+Battery Alert includes:
+
+HeadsetControl 4.1.0 — Sapd and contributors, GPL-3.0.
+https://github.com/Sapd/HeadsetControl/tree/4.1.0
+License and complete corresponding source archive are in vendor/headsetcontrol/.
+The official portable executable is invoked as a separate process, exclusively for battery reads.
+SHA256 headsetcontrol.exe:
+047F0AE26A06D86F6EC5A543166DF20CCD47EE07148C915221AA08B97BC190DD
+SHA256 headsetcontrol-4.1.0.tar.gz:
+8084EFE74C96DB051CDB31B1CF7FF4E3D441C97DAA6C85A35209278EC7448B8E
+
+Pulsar battery protocol references (MIT):
+https://github.com/andrewrabert/python-pulsar-mouse-tool
+Copyright (c) 2026 Andrew Rabert
+https://github.com/packerlschupfer/pulsar-mouse-linux
+Copyright (c) 2026 Packerlschupfer
+The POWER wire format was reimplemented in C#. No configuration/firmware write code is included.
+Full notices are included in vendor/pulsar/.
+Additional read-only protocol/catalog reference: official Pulsar Bibimbap cMouse
+https://bbb.pulsar.gg/cMouse/cfg.json (version 1.3.12, inspected 2026-10-10).
+The vendor's JavaScript is not redistributed.
+
+HidSharp 2.6.4 — James F. Bellinger, MIT.
+https://github.com/IntergatedCircuits/HidSharp
+
+Microsoft.WindowsAppSDK 1.8.260921001 — Microsoft, MIT.
+https://github.com/microsoft/WindowsAppSDK
+
+.NET 10 and WPF — .NET Foundation and contributors, MIT.
+https://github.com/dotnet/runtime
+https://github.com/dotnet/wpf
+Self-contained runtime license/third-party notice files are shipped in the portable distribution.
+Full dependency licenses and runtime third-party notices are in vendor/licenses/.
+
+Product photographs: Logitech, Pulsar Gaming Gears, and Beats/Apple.
+These product images remain copyrighted by their respective owners.
+Sources and representative-variant details are listed in DESIGN-ASSETS.md.
+The ambient-glass background was generated with the built-in image_gen tool.
