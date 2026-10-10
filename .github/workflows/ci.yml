@@ -42,7 +42,9 @@ jobs:
           $base = "https://github.com/gitleaks/gitleaks/releases/download/v$version"
           $archive = Join-Path $env:RUNNER_TEMP $asset
           Invoke-WebRequest "$base/$asset" -OutFile $archive
-          $checksums = (Invoke-WebRequest "$base/gitleaks_${version}_checksums.txt").Content
+          $checksumFile = Join-Path $env:RUNNER_TEMP "gitleaks-checksums.txt"
+          Invoke-WebRequest "$base/gitleaks_${version}_checksums.txt" -OutFile $checksumFile
+          $checksums = Get-Content -LiteralPath $checksumFile -Raw
           $line = ($checksums -split "`n" | Where-Object { $_.TrimEnd().EndsWith($asset) })
           if (-not $line) { throw 'Missing Gitleaks checksum.' }
           $expected = ($line.Trim() -split '\s+')[0]
@@ -51,3 +53,4 @@ jobs:
           Expand-Archive -LiteralPath $archive -DestinationPath $tools -Force
           & (Join-Path $tools 'gitleaks.exe') git . --redact --no-banner --log-opts=--all
           if ($LASTEXITCODE -ne 0) { throw 'Secret scan failed.' }
+
