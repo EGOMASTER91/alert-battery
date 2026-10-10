@@ -1,0 +1,44 @@
+name: CodeQL security analysis
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/codeql.yml'
+      - 'src/**'
+      - 'tests/**'
+      - 'vendor/**'
+      - '*.sln'
+      - 'Directory.Build.props'
+  pull_request:
+    paths:
+      - '.github/workflows/codeql.yml'
+      - 'src/**'
+      - 'tests/**'
+      - 'vendor/**'
+      - '*.sln'
+      - 'Directory.Build.props'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  analyze:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+      security-events: write
+      packages: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: github/codeql-action/init@f3c49fd1ef3281abc41069b3dd22807a60c963f6 # v4
+        with:
+          languages: csharp
+          build-mode: manual
+          queries: security-extended
+      - name: Build
+        run: dotnet build BatteryAlert.sln -c Release
+      - uses: github/codeql-action/analyze@f3c49fd1ef3281abc41069b3dd22807a60c963f6 # v4
+        with:
+          category: '/language:csharp'
